@@ -3999,6 +3999,19 @@ const QUESTIONS = [
    Format: 'YYYY-MM-DDTHH:MM:SS+09:00' (JST) */
 const EXPIRY_DATE = '2026-08-06T23:59:59+09:00';
 
+/* 共通パスワード（アプリ全体を保護する簡易ロック）
+   Shared password gate — a simple lock in front of the whole app.
+   一度正しく入力すると、その端末では次回から自動的に通過します（再入力不要）。
+   Once entered correctly, the device remembers it — no need to re-enter every time. */
+const APP_PASSWORD = 'kisokyu44';
+const PASSWORD_OK_KEY = 'basicSkillQuizPasswordOk_v1';
+function hasEnteredPassword(){
+  try{ return localStorage.getItem(PASSWORD_OK_KEY) === '1'; }catch(e){ return true; } // if storage unavailable, don't block the app
+}
+function setPasswordEntered(){
+  try{ localStorage.setItem(PASSWORD_OK_KEY, '1'); }catch(e){}
+}
+
 const STORAGE_KEY = 'basicSkillQuizHistory_v1';
 const MAX_HISTORY = 3;
 const LANG_STORAGE_KEY = 'basicSkillQuizSupplementLang_v1';
@@ -4569,6 +4582,11 @@ function render(){
     app.innerHTML = lockScreenHTML();
     return;
   }
+  if(!hasEnteredPassword()){
+    app.innerHTML = passwordGateHTML();
+    attachHandlers();
+    return;
+  }
   if(!hasChosenLang()){
     app.innerHTML = langGateHTML();
     attachHandlers();
@@ -4597,6 +4615,20 @@ function lockScreenHTML(){
     <p>${t('lockDesc')}<br><br>
     引き続き学習が必要な場合は、担当者にお問い合わせください。<br>
     ${t('lockContact')}</p>
+  </div>`;
+}
+
+/* ===================== PASSWORD GATE (shown until the correct shared password is entered once) ===================== */
+function passwordGateHTML(){
+  return `
+  <div class="name-gate">
+    <div class="icon">🔑</div>
+    <h2>パスワードを入力してください<br>Please enter the password</h2>
+    <p>担当者から伝えられたパスワードを入力してください。<br>
+    Enter the password given to you by your supervisor.</p>
+    <input type="password" id="appPasswordInput" class="name-gate-input" placeholder="Password" />
+    <div id="appPasswordError" style="color:#d33;font-weight:700;font-size:13px;min-height:18px;margin-top:4px;"></div>
+    <button class="btn btn-primary" data-action="submit-app-password">開始する / Start</button>
   </div>`;
 }
 
@@ -5040,6 +5072,19 @@ function attachHandlers(){
 function onAction(e){
   const action = e.currentTarget.dataset.action;
   switch(action){
+    case 'submit-app-password': {
+      const inp = document.getElementById('appPasswordInput');
+      const v = inp ? inp.value : '';
+      if(v === APP_PASSWORD){
+        setPasswordEntered();
+        render();
+      }else{
+        const err = document.getElementById('appPasswordError');
+        if(err) err.textContent = 'パスワードが違います / Incorrect password';
+        if(inp){ inp.value=''; inp.focus(); }
+      }
+      break;
+    }
     case 'save-trainee-name': {
       const inp = document.getElementById('traineeNameInput');
       const v = inp ? inp.value.trim() : '';
