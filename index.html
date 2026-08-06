@@ -4003,7 +4003,7 @@ const EXPIRY_DATE = '2026-09-12T23:59:59+09:00';
    Shared password gate — a simple lock in front of the whole app.
    一度正しく入力すると、その端末では次回から自動的に通過します（再入力不要）。
    Once entered correctly, the device remembers it — no need to re-enter every time. */
-const APP_PASSWORD = 'kisokyu44';
+const APP_PASSWORD = 'kisokyu45';
 const PASSWORD_OK_KEY = 'basicSkillQuizPasswordOk_v1';
 function hasEnteredPassword(){
   try{ return localStorage.getItem(PASSWORD_OK_KEY) === '1'; }catch(e){ return true; } // if storage unavailable, don't block the app
@@ -4527,10 +4527,11 @@ function isExpired(){
   return new Date() > new Date(EXPIRY_DATE);
 }
 function renderExpiryBanner(){
-  // 表示だけ非表示。期限そのもの（isExpired()によるロック）は維持したまま。
-  // Banner display only hidden — the underlying expiry lock (isExpired()) still applies.
   const el = document.getElementById('expiryBanner');
-  el.style.display = 'none';
+  const d = new Date(EXPIRY_DATE);
+  const dateStr = d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+  el.textContent = '📅 このアプリの利用期限：' + dateStr + ' まで';
+  el.style.display = '';
 }
 
 /* ===================== HISTORY (localStorage, up to 3 attempts) ===================== */
