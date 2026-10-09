@@ -3997,13 +3997,13 @@ const QUESTIONS = [
 /* 利用期限（この日時を過ぎるとアプリが使用不可になります）
    Expiry date/time — after this, the app becomes unusable.
    Format: 'YYYY-MM-DDTHH:MM:SS+09:00' (JST) */
-const EXPIRY_DATE = '2026-10-07T23:59:59+09:00';
+const EXPIRY_DATE = '2026-11-04T23:59:59+09:00';
 
 /* 共通パスワード（アプリ全体を保護する簡易ロック）
    Shared password gate — a simple lock in front of the whole app.
    一度正しく入力すると、その端末では次回から自動的に通過します（再入力不要）。
    Once entered correctly, the device remembers it — no need to re-enter every time. */
-const APP_PASSWORD = 'kisokyu45';
+const APP_PASSWORD = 'kisokyu46';
 const PASSWORD_OK_KEY = 'basicSkillQuizPasswordOk_v1';
 function hasEnteredPassword(){
   try{ return localStorage.getItem(PASSWORD_OK_KEY) === '1'; }catch(e){ return true; } // if storage unavailable, don't block the app
